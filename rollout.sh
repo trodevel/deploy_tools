@@ -1,16 +1,15 @@
 #!/bin/bash
 
-# $Revision: 2487 $ $Date:: 2015-09-07 #$ $Author: serge $
+# $Revision: 2490 $ $Date:: 2015-09-07 #$ $Author: serge $
 
 USER=$1
 HOST=$2
-PACKAGE=$3
 
 CONFIG=./rollout.cfg
 
 show_help()
 {
-    echo "Usage: rollout.sh USER HOST PACKAGE"
+    echo "Usage: rollout.sh USER HOST"
 }
 
 if [ -z "$USER" ]
@@ -25,21 +24,9 @@ then
     exit
 fi
 
-if [ -z "$PACKAGE" ]
-then
-    show_help
-    exit
-fi
-
 USERHOST=$USER@$HOST
 
-DATUM=$(date -u +%Y%m%d_%H%M)
-NAME=${PACKAGE}_$DATUM
-ARCNAME=$NAME.tar.gz
-
-echo "name          = $NAME"
 echo "host          = $HOST"
-echo "package       = $PACKAGE"
 echo "userhost      = $USERHOST"
 #exit
 
@@ -51,12 +38,26 @@ fi
 
 source $CONFIG
 
-if [ -z "$PACKAGE_FILES" ]
+if [ -z "$PACKAGE" ]
 then
-    echo "ERROR: \$PACKAGE_FILES is not defined"
+    echo "ERROR: \$PACKAGE is not defined in the config file"
     exit
 fi
 
+if [ -z "$PACKAGE_FILES" ]
+then
+    echo "ERROR: \$PACKAGE_FILES is not defined in the config file"
+    exit
+fi
+
+DATUM=$(date -u +%Y%m%d_%H%M)
+NAME=${PACKAGE}_$DATUM
+ARCNAME=$NAME.tar.gz
+
+source $CONFIG             # need to include config file 2 times in order to pass $NAME, etc.
+
+echo "package       = $PACKAGE"
+echo "name          = $NAME"
 echo
 echo "package files = $PACKAGE_FILES"
 echo "post actions  = $PACKAGE_POST_ACTIONS"
