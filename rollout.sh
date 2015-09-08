@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# $Revision: 2490 $ $Date:: 2015-09-07 #$ $Author: serge $
+# $Revision: 2500 $ $Date:: 2015-09-07 #$ $Author: serge $
 
 USER=$1
 HOST=$2
@@ -81,6 +81,8 @@ fi
 ssh $USERHOST "\
 mkdir $NAME; \
 tar xfvz $ARCNAME -C $NAME; \
+if [ -L ~/$PACKAGE.prev ]; then echo 'ROLLOUT: removing existing previous package'; rm ~/$PACKAGE.prev; fi; \
+if [ -L ~/$PACKAGE ]; then echo 'ROLLOUT: package with the same name EXISTS, renaming to previous'; mv ~/$PACKAGE ~/$PACKAGE.prev; else echo 'ROLLOUT: package is NEW'; fi; \
 ln -sf ~/$NAME ~/$PACKAGE; \
-$PACKAGE_POST_ACTIONS; \
+$PACKAGE_POST_ACTIONS \
 "
