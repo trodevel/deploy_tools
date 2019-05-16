@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# $Revision: 2500 $ $Date:: 2015-09-07 #$ $Author: serge $
+# $Revision: 11451 $ $Date:: 2019-05-16 #$ $Author: serge $
 
 USER=$1
 HOST=$2
@@ -38,17 +38,9 @@ fi
 
 source $CONFIG
 
-if [ -z "$PACKAGE" ]
-then
-    echo "ERROR: \$PACKAGE is not defined in the config file"
-    exit
-fi
-
-if [ -z "$PACKAGE_FILES" ]
-then
-    echo "ERROR: \$PACKAGE_FILES is not defined in the config file"
-    exit
-fi
+[[ -z "$PACKAGE" ]]          && echo "ERROR: \$PACKAGE is not defined in the config file" && exit
+[[ -z "$PACKAGE_FILES" ]]    && echo "ERROR: \$PACKAGE_FILES is not defined in the config file" && exit
+[[ -z "$PACKAGE_DEST_DIR" ]] && echo "ERROR: \$PACKAGE_DEST_DIR is not defined in the config file" && exit
 
 DATUM=$(date -u +%Y%m%d_%H%M)
 NAME=${PACKAGE}_$DATUM
@@ -60,12 +52,13 @@ echo "package       = $PACKAGE"
 echo "name          = $NAME"
 echo
 echo "package files = $PACKAGE_FILES"
+echo "name          = $PACKAGE_DEST_DIR"
 echo "post actions  = $PACKAGE_POST_ACTIONS"
 echo
 
-tar cfvz $ARCNAME $PACKAGE_FILES
+tar cfvz $ARCNAME $PACKAGE_FILES --transform "s,^,$PACKAGE/,"
 
-scp $ARCNAME $USERHOST:
+scp $ARCNAME $USERHOST:$PACKAGE_DEST_DIR
 error=$?
 
 #echo error=$error
@@ -79,10 +72,12 @@ fi
 #exit
 
 ssh $USERHOST "\
-mkdir $NAME; \
-tar xfvz $ARCNAME -C $NAME; \
-if [ -L ~/$PACKAGE.prev ]; then echo 'ROLLOUT: removing existing previous package'; rm ~/$PACKAGE.prev; fi; \
-if [ -L ~/$PACKAGE ]; then echo 'ROLLOUT: package with the same name EXISTS, renaming to previous'; mv ~/$PACKAGE ~/$PACKAGE.prev; else echo 'ROLLOUT: package is NEW'; fi; \
-ln -sf ~/$NAME ~/$PACKAGE; \
+if [ ! -d $PACKAGE_DEST_DIR ]; then echo 'ROLLOUT: creating $PACKAGE_DEST_DIR'; mkdir $PACKAGE_DEST_DIR; else echo 'ROLLOUT: destination directory $PACKAGE_DEST_DIR exists'; fi; \
+cd $PACKAGE_DEST_DIR; \
+if [ -d $PACKAGE.prev ]; then echo 'ROLLOUT: removing existing previous package'; rm -rf $PACKAGE.prev; fi; \
+if [ -d $PACKAGE ]; then echo 'ROLLOUT: package with the same name EXISTS, renaming to previous'; mv $PACKAGE $PACKAGE.prev; else echo 'ROLLOUT: package is NEW'; fi; \
+tar xfvz $ARCNAME; \
 $PACKAGE_POST_ACTIONS \
 "
+
+rm $ARCNAME
