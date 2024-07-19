@@ -57,7 +57,7 @@ INPUTS=$( echo $INPUT )
 
 for s in $INPUT
 do
-    test -d "$s" || { echo "ERROR: source directory $s doesn't exit"; exit 1; }
+    [[ ! -d "$s" && ! -f "$s" ]] && { echo "ERROR: source directory or file $s doesn't exit"; exit 1; }
 done
 
 # generate exclude list
