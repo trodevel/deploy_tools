@@ -65,7 +65,7 @@ echo
 DATUM=$(date -u +%Y%m%d_%H%M)
 ARCNAME=${NAME}_${DATUM}.tar.gz
 
-scp $ARCNAME $DEST_USER_HOST:$PACKAGE_DEST_DIR/$ARCNAME
+scp $PACKAGE $DEST_USER_HOST:$PACKAGE_DEST_DIR/$ARCNAME
 error=$?
 
 #echo error=$error
