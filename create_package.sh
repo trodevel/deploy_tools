@@ -63,4 +63,4 @@ do
     test -d "$s" || { echo "ERROR: source directory $s doesn't exit"; exit 1; }
 done
 
-tar -zcvf $FL_OUT -C $INPUT . --transform "s/^\./$NAME/"
+tar -zcvf $FL_OUT -C . $INPUT --transform "s~^~$NAME/~"
