@@ -79,6 +79,6 @@ if [ ! -d $PACKAGE_DEST_DIR ]; then echo 'ROLLOUT: creating $PACKAGE_DEST_DIR'; 
 cd $PACKAGE_DEST_DIR; \
 if [ -d $NAME.prev ]; then echo 'ROLLOUT: removing existing previous package'; rm -rf $NAME.prev; fi; \
 if [ -d $NAME ]; then echo 'ROLLOUT: package with the same name EXISTS, renaming to previous'; mv $NAME $NAME.prev; else echo 'ROLLOUT: package is NEW'; fi; \
-tar xfvz $ARCNAME; \
+tar xfz $ARCNAME; \
 $PACKAGE_POST_ACTIONS \
 "
