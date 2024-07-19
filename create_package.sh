@@ -50,9 +50,6 @@ echo "DEBUG: output = $FL_OUT"
 
 source "$CFG"
 
-src=$1
-dest=$2
-
 [[ -z "$NAME" ]]  &&  { echo "ERROR: package name NAME in not defined in config $CFG"; exit 1; }
 [[ -z "$INPUT" ]] &&  { echo "ERROR: input folder INPUT in not defined in config $CFG"; exit 1; }
 
@@ -63,4 +60,15 @@ do
     test -d "$s" || { echo "ERROR: source directory $s doesn't exit"; exit 1; }
 done
 
-tar -zcvf $FL_OUT $INPUT --transform "s~^~$NAME/~"
+# generate exclude list
+
+EXCL=""
+
+EXCLUDES=$( echo $EXCLUDE )
+
+for s in $EXCLUDES
+do
+    EXCL="$EXCL --exclude=$s"
+done
+
+tar -zcvf $FL_OUT $INPUT $EXCL --transform "s~^~$NAME/~"
