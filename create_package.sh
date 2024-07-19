@@ -56,6 +56,11 @@ dest=$2
 [[ -z "$NAME" ]]  &&  { echo "ERROR: package name NAME in not defined in config $CFG"; exit 1; }
 [[ -z "$INPUT" ]] &&  { echo "ERROR: input folder INPUT in not defined in config $CFG"; exit 1; }
 
-test -d "$INPUT" || { echo "ERROR: source directory doesn't exit"; exit 1; }
+INPUTS=$( echo $INPUT )
+
+for s in $INPUT
+do
+    test -d "$s" || { echo "ERROR: source directory $s doesn't exit"; exit 1; }
+done
 
 tar -zcvf $FL_OUT -C $INPUT . --transform "s/^\./$NAME/"
