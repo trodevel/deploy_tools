@@ -71,4 +71,4 @@ do
     EXCL="$EXCL --exclude=$s"
 done
 
-tar -zcvf $FL_OUT $INPUT $EXCL --transform "s~^~$NAME/~"
+tar -zcvf $FL_OUT $EXCL $INPUT --transform "s~^~$NAME/~"
